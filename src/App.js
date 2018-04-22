@@ -2,15 +2,23 @@ import React, { Component } from "react";
 
 class App extends Component {
   state = {
-    phrase:
-      "burger key misery alley gauge hotel paper hockey puzzle hotel buffalo jacket palace please pilot way almost melody cry damp dice since pigeon era",
+    phrase: "",
     nbTotalShards: 5,
     nbNeededShards: 3,
-    shards: []
+    shards: [],
+    shouldUseNumbers: false,
+    phraseLength: 0
   };
 
   render() {
-    const { phrase, nbTotalShards, nbNeededShards, shards } = this.state;
+    const {
+      phrase,
+      nbTotalShards,
+      nbNeededShards,
+      shards,
+      shouldUseNumbers,
+      phraseLength
+    } = this.state;
 
     return (
       <div className="App">
@@ -31,7 +39,29 @@ class App extends Component {
             onChange={this.onNbNeededShardsChange}
           />
         </label>
-        <textarea value={phrase} onChange={this.onPhraseChange} />
+        <label>
+          <input
+            type="checkbox"
+            checked={shouldUseNumbers}
+            onChange={this.onShouldUseNumbersChange}
+          />
+          I don't want to input my mnemonic phrase (use number instead)
+        </label>
+        {shouldUseNumbers ? (
+          <label>
+            Phrase length:
+            <input
+              type="number"
+              value={phraseLength}
+              onChange={this.onPhraseLengthChange}
+            />
+          </label>
+        ) : (
+          <label>
+            Phrase:
+            <textarea value={phrase} onChange={this.onPhraseChange} />
+          </label>
+        )}
 
         <button onClick={this.onGenerageClick}>Generate</button>
 
@@ -55,6 +85,11 @@ class App extends Component {
     this.setState({ phrase: value });
   };
 
+  onPhraseLengthChange = e => {
+    const value = e.target.value;
+    this.setState({ phraseLength: Number(value) });
+  };
+
   onNbTotalShardsChange = e => {
     const value = e.target.value;
     this.setState({ nbTotalShards: Number(value) });
@@ -65,12 +100,30 @@ class App extends Component {
     this.setState({ nbNeededShards: Number(value) });
   };
 
-  onGenerageClick = () => {
-    const { phrase, nbTotalShards, nbNeededShards } = this.state;
+  onShouldUseNumbersChange = e => {
+    const checked = e.target.checked;
+    this.setState({ shouldUseNumbers: checked });
+  };
 
-    const words = phrase
-      .split(" ")
-      .map((x, i) => ({ text: x, position: i + 1 }));
+  onGenerageClick = () => {
+    const {
+      phrase,
+      nbTotalShards,
+      nbNeededShards,
+      shouldUseNumbers,
+      phraseLength
+    } = this.state;
+
+    let words;
+    if (shouldUseNumbers) {
+      words = Array.from({ length: phraseLength }).map((x, i) => ({
+        text: "",
+        position: i + 1
+      }));
+    } else {
+      words = phrase.split(" ").map((x, i) => ({ text: x, position: i + 1 }));
+    }
+
     const shards = generateShards(words, nbTotalShards, nbNeededShards);
 
     this.setState({ shards });
