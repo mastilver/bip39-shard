@@ -53,12 +53,12 @@ class App extends Component {
 
   onNbTotalShardsChange = e => {
     const value = e.target.value;
-    this.setState({ nbTotalShards: value });
+    this.setState({ nbTotalShards: Number(value) });
   };
 
   onNbNeededShardsChange = e => {
     const value = e.target.value;
-    this.setState({ nbNeededShards: value });
+    this.setState({ nbNeededShards: Number(value) });
   };
 
   onGenerageClick = () => {
