@@ -38,7 +38,11 @@ class App extends Component {
         {shards.length > 0 && (
           <div>
             {shards.map((shard, i) => (
-              <textarea readOnly value={shard.join("\n")} key={i} />
+              <textarea
+                readOnly
+                value={shard.map(x => `${x.position}. ${x.text}`).join("\n")}
+                key={i}
+              />
             ))}
           </div>
         )}
@@ -64,7 +68,9 @@ class App extends Component {
   onGenerageClick = () => {
     const { phrase, nbTotalShards, nbNeededShards } = this.state;
 
-    const words = phrase.split(" ").map((x, i) => `${i + 1}. ${x}`);
+    const words = phrase
+      .split(" ")
+      .map((x, i) => ({ text: x, position: i + 1 }));
     const shards = generateShards(words, nbTotalShards, nbNeededShards);
 
     this.setState({ shards });
@@ -86,7 +92,7 @@ function generateShards(words, nbTotalShards, nbNeededShards) {
     );
   });
 
-  return shards;
+  return shards.map(shard => shard.sort((a, b) => a.position - b.position));
 }
 
 // https://stackoverflow.com/a/2450976
